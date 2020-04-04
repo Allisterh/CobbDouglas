@@ -1,7 +1,7 @@
 # CobbDouglas
 __Estimation and efficiency analysis for the Cobb-Douglas production frontier__
 
-`CobbDouglas` is a R package allowing
+`CobbDouglas` is a R package implementing functionalities
 to estimate a Cobb-Douglas production frontier from sample data through constrained least squares (possibly setting the desired returns to scale),
 to predict the maximum producible output or technical efficiency,
 and to obtain boostrap confidence intervals for parameters and fitted values.
