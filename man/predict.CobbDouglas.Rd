@@ -19,7 +19,7 @@
 data(proc)
 m2 <- CobbDouglas("output", c("labour","capital"), data=proc)
 
-# prediction of maximum producible output
+# prediction of the maximum producible output
 predict(m2, newdata=data.frame(labour=20,capital=5))
 
 # prediction of technical efficiency

@@ -1,13 +1,14 @@
 Package: CobbDouglas
 Type: Package
-Title: Cobb-Douglas Frontier Analysis
+Title: Estimation and Efficiency Analysis for the Cobb-Douglas
+        Production Frontier
 Version: 1.0
 Date: 2020-04-04
 Author: Alessandro Magrini
 Maintainer: Alessandro Magrini <alessandro.magrini@unifi.it>
-Description: Estimation and efficiency analysis for the Cobb-Douglas production frontier.
+Description: Functionalities to estimate a Cobb-Douglas production frontier from sample data through constrained least squares (possibly setting the desired returns to scale), to predict the maximum producible output or technical efficiency, and to obtain boostrap confidence intervals for parameters and fitted values.
 Depends: R (>= 3.5.0), quadprog
 Imports: stats
 License: GPL-2
 NeedsCompilation: no
-Packaged: 2020-04-04 14:37:03 UTC; Alessandro
+Packaged: 2020-04-04 18:40:40 UTC; Alessandro

@@ -1,7 +1,7 @@
 \name{CobbDouglas}
 \alias{CobbDouglas}
 \title{Estimation of a Cobb-Douglas production frontier}
-\description{Implementation of quadratic programming to estimate a Cobb-Douglas production frontier from data.}
+\description{Estimation of a Cobb-Douglas production frontier from sample data.}
 \usage{CobbDouglas(y.name, x.names=NULL, data, beta.sum=NULL)}
 \arguments{
   \item{y.name}{The name of the output variable.}
@@ -61,6 +61,9 @@ C. W. Cobb and P. H. Douglas (1928). A theory of production. \emph{American Econ
 \examples{
 data(proc)
 
+
+### 1 input variable: 'labour'
+
 m1 <- CobbDouglas("output", "labour", data=proc)
 summary(m1)
 
@@ -76,7 +79,7 @@ m1_eff <- m1$efficiency
 m1_eff[which(m1_eff$y.side==1),]
 
 
-### 1 input: labour + constraint on beta
+### 1 input variable: 'labour' + constraint on beta
 
 # beta=1 (constant returns to scale)
 m1c <- CobbDouglas("output", "labour", data=proc, beta.sum=1)
@@ -97,7 +100,7 @@ m1d$efficiency[which(m1d$efficiency$y.side==1),]
 plot(m1d, cex.axis=1.1, cex.lab=1.2, main="beta = 0.3", cex.main=1.6)
 
 
-### 2 input: labour, capital
+### 2 input variables: 'labour' and 'capital'
 
 # no constraints on the sum of beta parameters
 m2 <- CobbDouglas("output", c("labour","capital"), data=proc)
