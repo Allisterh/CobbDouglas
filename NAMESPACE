@@ -1,0 +1,12 @@
+export(CobbDouglas, CobbDouglas_boot)
+
+S3method(print, CobbDouglas)
+S3method(summary, CobbDouglas)
+S3method(plot, CobbDouglas)
+S3method(predict, CobbDouglas)
+S3method(print, summary.CobbDouglas)
+S3method(print, CobbDouglas_boot)
+
+import("quadprog")
+importFrom("graphics", "grid", "lines", "plot")
+importFrom("stats", "predict", "quantile", "sd", "pnorm")
