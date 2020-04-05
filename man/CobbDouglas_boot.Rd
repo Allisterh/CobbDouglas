@@ -15,7 +15,7 @@
   %\item{\code{boot.fitted}}{The bootstrap simulation for the fitted values.}
 }
 \details{Non-parameteric bootstrap resampling (Efron and Tibshirani, 1993) is performed.
-Confidence intervals are computed from the bootstrap similation using Highest Posterior Density (HPD) intervals (Box and Tiao, 1992).}
+Confidence intervals are computed from the bootstrap simulation using Highest Posterior Density (HPD) intervals (Box and Tiao, 1992).}
 \author{Alessandro Magrini <alessandro.magrini@unifi.it>}
 \references{
 G. Box and G. Tiao (1992). Bayesian Inference in Statistical Analysis. John Wiley \& Sons, New York (US-NY).
