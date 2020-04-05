@@ -23,5 +23,5 @@ The main functions of the package are:
 }
 \author{Alessandro Magrini <alessandro.magrini@unifi.it>}
 \references{
-C. W. Cobb and P. H. Douglas (1928). A theory of production. \emph{American Economic Review}, 18: 139-165.
-}        
+C. W. Cobb and P. H. Douglas (1928). A Theory of Production. \emph{American Economic Review}, 18: 139-165.
+}

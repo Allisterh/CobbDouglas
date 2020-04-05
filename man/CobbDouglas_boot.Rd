@@ -14,21 +14,27 @@
   %\item{\code{boot.parameters}}{The boostrap simulation for the parameters.}
   %\item{\code{boot.fitted}}{The bootstrap simulation for the fitted values.}
 }
-%\note{}
-%\references{}
+\details{Non-parameteric bootstrap resampling (Efron and Tibshirani, 1993) is performed.
+Confidence intervals are computed from the bootstrap similation using Highest Posterior Density (HPD) intervals (Box and Tiao, 1992).}
+\author{Alessandro Magrini <alessandro.magrini@unifi.it>}
+\references{
+G. Box and G. Tiao (1992). Bayesian Inference in Statistical Analysis. John Wiley \& Sons, New York (US-NY).
+
+B. Efron and R. Tibshirani (1993). An Introduction to the Bootstrap. Chapman \& Hall/CRC, Boca Raton (US-FL).
+}
 \seealso{\link{CobbDouglas}.}
 \examples{
-data(proc)
+data(prod)
 
-m2 <- CobbDouglas("output", c("labour","capital"), data=proc)
+m2 <- CobbDouglas("output", c("labour","capital"), data=prod)
 set.seed(123)
 CobbDouglas_boot(m2, nboot=150)
 
-m2c <- CobbDouglas("output", c("labour","capital"), data=proc, beta.sum=1)
+m2c <- CobbDouglas("output", c("labour","capital"), data=prod, beta.sum=1)
 set.seed(123)
 CobbDouglas_boot(m2c, nboot=150)
 
-m2d <- CobbDouglas("output", c("labour","capital"), data=proc, beta.sum=0.7)
+m2d <- CobbDouglas("output", c("labour","capital"), data=prod, beta.sum=0.7)
 set.seed(123)
 CobbDouglas_boot(m2d, nboot=150)
 }

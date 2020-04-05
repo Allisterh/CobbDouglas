@@ -1,20 +1,20 @@
 # estimate the frontier
 CobbDouglas <-  function(y.name,x.names=NULL,data,beta.sum=NULL) {
   # check data
-  if(missing(data)) stop("Missing argument 'data'",call.=F)
-  if(!identical(class(data),"data.frame")) stop("Argument 'data' must be a data.frame",call.=F)
-  if(missing(y.name)) stop("Missing argument 'y.name'",call.=F)
-  if(!is.character(y.name) || length(y.name)!=1) stop("Argument 'y.name' must be a character vector of length 1",call.=F)
+  if(missing(data)) stop("Missing argument 'data'")
+  if(!identical(class(data),"data.frame")) stop("Argument 'data' must be a data.frame")
+  if(missing(y.name)) stop("Missing argument 'y.name'")
+  if(!is.character(y.name) || length(y.name)!=1) stop("Argument 'y.name' must be a character vector of length 1")
   auxchk <- setdiff(y.name,colnames(data))
-  if(length(auxchk)>0) stop("Variable '",auxchk[1],"' not found",sep="",call.=F)
-  #if(missing(x.names)) stop("Missing argument 'x.names'",call.=F)
+  if(length(auxchk)>0) stop("Variable '",auxchk[1],"' not found",sep="")
+  #if(missing(x.names)) stop("Missing argument 'x.names'")
   if(is.null(x.names)) x.names <- setdiff(colnames(data),y.name)
-  if(!is.character(x.names) || length(x.names)<1) stop("Argument 'x.names' must be a character vector of length 1 or greater",call.=F)
+  if(!is.character(x.names) || length(x.names)<1) stop("Argument 'x.names' must be a character vector of length 1 or greater")
   auxchk <- setdiff(x.names,colnames(data))
-  if(length(auxchk)>0) stop("Variable '",auxchk[1],"' not found",sep="",call.=F)
-  if(sum(is.na(data[,c(y.name,x.names)]))>0) stop("Missing values found in data",call.=F)
+  if(length(auxchk)>0) stop("Variable '",auxchk[1],"' not found",sep="")
+  if(sum(is.na(data[,c(y.name,x.names)]))>0) stop("Missing values found in data")
   if(length(beta.sum)>1) beta.sum <- beta.sum[1]
-  if(!is.null(beta.sum) & (!is.numeric(beta.sum) || beta.sum<=0)) stop("Argument 'beta.sum' must be a strictly positive value",call.=F)
+  if(!is.null(beta.sum) & (!is.numeric(beta.sum) || beta.sum<=0)) stop("Argument 'beta.sum' must be a strictly positive value")
   n <- nrow(data)
   yorig <- data[,y.name]
   y <- log(data[,y.name])
@@ -118,27 +118,27 @@ print.summary.CobbDouglas <- function(x,...) {
 
 # predict method
 predict.CobbDouglas <- function(object,newdata=NULL,type="output",...) {
-  if(!is.null(newdata) && !identical(class(newdata),"data.frame")) stop("Argument 'newdata' must be a data.frame",call.=F)
+  if(!is.null(newdata) && !identical(class(newdata),"data.frame")) stop("Argument 'newdata' must be a data.frame")
   if(length(type)>1) type <- type[1]
   auxtype <- substr(c("output","efficiency"),1,nchar(type))
-  if((type%in%auxtype)==F) stop("Argument 'type' must be either 'output' or 'efficiency'",call.=F)
+  if((type%in%auxtype)==F) stop("Argument 'type' must be either 'output' or 'efficiency'")
   if(is.null(newdata)) {
     if(type==auxtype[2]) object$efficiency else object$fitted
     } else {
     auxpar <- par <- object$parameters
     par[1] <- log(auxpar[1])
     xnam <- object$x.names
-    if(sum(is.na(newdata[,xnam]))>0) stop("Missing values found in 'newdata'",call.=F)
+    if(sum(is.na(newdata[,xnam]))>0) stop("Missing values found in 'newdata'")
     auxchk <- setdiff(xnam,colnames(newdata))
-    if(length(auxchk)>0) stop("Input variable '",auxchk[1],"' not found",sep="",call.=F)
+    if(length(auxchk)>0) stop("Input variable '",auxchk[1],"' not found",sep="")
     xval <- as.matrix(log(newdata[,xnam,drop=F]))
     X <- cbind(rep(1,nrow(xval)),xval)
     res <- c(exp(X%*%par))
     names(res) <- rownames(newdata)
     if(type==auxtype[2]) {
       ynam <- object$y.name
-      if((ynam%in%colnames(newdata))==F) stop("Output variable '",ynam,"' not found",sep="",call.=F)
-      if(sum(is.na(newdata[,ynam]))>0) stop("Missing values found in 'newdata'",call.=F)
+      if((ynam%in%colnames(newdata))==F) stop("Output variable '",ynam,"' not found",sep="")
+      if(sum(is.na(newdata[,ynam]))>0) stop("Missing values found in 'newdata'")
       effy <- round(newdata[,ynam]/res,3)
       effx <- round(effy^(1/sum(par[2:length(par)])),3)
       if(sum(effy>1)|sum(effx>1)) warning("Some points are above the frontier")
@@ -154,7 +154,7 @@ predict.CobbDouglas <- function(object,newdata=NULL,type="output",...) {
 # plot method
 plot.CobbDouglas <- function(x,xlab=NULL,ylab=NULL,...) {
   xnam <- x$x.names
-  if(length(xnam)!=1) stop("Currently implemented only for 1 input variable",call.=F)
+  if(length(xnam)!=1) stop("Currently implemented only for 1 input variable")
   ynam <- x$y.name
   data <- x$data
   y <- data[,ynam]
@@ -172,11 +172,11 @@ plot.CobbDouglas <- function(x,xlab=NULL,ylab=NULL,...) {
 
 # bootstrap
 CobbDouglas_boot <- function(x,nboot=500,conf=0.95) {
-  if(!identical(class(x),"CobbDouglas")) stop("Argument 'x' must be an object of class 'CobbDouglas'",call.=F)
+  if(!identical(class(x),"CobbDouglas")) stop("Argument 'x' must be an object of class 'CobbDouglas'")
   if(length(nboot)>1) nboot <- nboot[1]
-  if(!is.numeric(nboot) || round(nboot)!=nboot || nboot<50) stop("Argument 'nboot' must be an integer number greater or equal than 50",call.=F)
+  if(!is.numeric(nboot) || round(nboot)!=nboot || nboot<50) stop("Argument 'nboot' must be an integer number greater or equal than 50")
   if(length(conf)>1) conf <- conf[1]
-  if(!is.numeric(conf) || conf<=0 || conf>=1) stop("Argument 'conf' must be in the interval(0,1)",call.=F)
+  if(!is.numeric(conf) || conf<=0 || conf>=1) stop("Argument 'conf' must be in the interval(0,1)")
   conf <- round(conf,4)
   data <- x$data
   ynam <- x$y.name
@@ -202,8 +202,10 @@ CobbDouglas_boot <- function(x,nboot=500,conf=0.95) {
   bsum_nam <- "(beta.sum)"
   b_res <- cbind(bhat,bsum_res)
   est <- c(par,bsum_est)
-  summ <- cbind(est,t(apply(b_res,2,quantile,prob=c(1-conf,1+conf)/2)))
-  summ_y <- cbind(x$fitted$orig.scale,t(apply(ystar,2,quantile,prob=c(1-conf,1+conf)/2)))  
+  #summ <- cbind(est,t(apply(b_res,2,quantile,prob=c(1-conf,1+conf)/2)))
+  #summ_y <- cbind(x$fitted$orig.scale,t(apply(ystar,2,quantile,prob=c(1-conf,1+conf)/2)))  
+  summ <- cbind(est,t(apply(b_res,2,emp.hpd,conf=conf)))
+  summ_y <- cbind(x$fitted$orig.scale,t(apply(ystar,2,emp.hpd,conf=conf)))
   colnames(summ) <- colnames(summ_y) <- c("Estimate",paste(round(c(1-conf,1+conf)/2*100,2),"%",sep=""))
   rownames(summ) <- c("(tau)",names(par)[2:length(par)],bsum_nam)
   rownames(summ_y) <- rownames(data)

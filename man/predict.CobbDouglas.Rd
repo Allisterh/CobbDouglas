@@ -13,11 +13,14 @@
 }
 \value{An object of class \code{data.frame}.}
 %\note{}
-%\references{}
+\author{Alessandro Magrini <alessandro.magrini@unifi.it>}
+\references{
+C. W. Cobb and P. H. Douglas (1928). A Theory of Production. \emph{American Economic Review}, 18: 139-165.
+}
 \seealso{\link{CobbDouglas}.}
 \examples{
-data(proc)
-m2 <- CobbDouglas("output", c("labour","capital"), data=proc)
+data(prod)
+m2 <- CobbDouglas("output", c("labour","capital"), data=prod)
 
 # prediction of the maximum producible output
 predict(m2, newdata=data.frame(labour=20,capital=5))

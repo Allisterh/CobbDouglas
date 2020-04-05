@@ -7,6 +7,6 @@ S3method(predict, CobbDouglas)
 S3method(print, summary.CobbDouglas)
 S3method(print, CobbDouglas_boot)
 
-import("quadprog")
+import("quadprog", "TeachingDemos")
 importFrom("graphics", "grid", "lines", "plot")
-importFrom("stats", "predict", "quantile", "sd", "pnorm")
+importFrom("stats", "predict", "sd", "pnorm")

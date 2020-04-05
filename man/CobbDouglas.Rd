@@ -54,17 +54,18 @@ S3 methods available for class \code{CobbDouglas} are:
 Also, the method \link{CobbDouglas_boot} is available to approximate confidence intervals of parameters and fitted values.
 }
 %note{}
+\author{Alessandro Magrini <alessandro.magrini@unifi.it>}
 \references{
-C. W. Cobb and P. H. Douglas (1928). A theory of production. \emph{American Economic Review}, 18: 139-165.
+C. W. Cobb and P. H. Douglas (1928). A Theory of Production. \emph{American Economic Review}, 18: 139-165.
 }
 \seealso{\link{predict.CobbDouglas}; \link{CobbDouglas_boot}.}
 \examples{
-data(proc)
+data(prod)
 
 
 ### 1 input variable: 'labour'
 
-m1 <- CobbDouglas("output", "labour", data=proc)
+m1 <- CobbDouglas("output", "labour", data=prod)
 summary(m1)
 
 # plot the estimated frontier
@@ -82,19 +83,19 @@ m1_eff[which(m1_eff$y.side==1),]
 ### 1 input variable: 'labour' + constraint on beta
 
 # beta=1 (constant returns to scale)
-m1c <- CobbDouglas("output", "labour", data=proc, beta.sum=1)
+m1c <- CobbDouglas("output", "labour", data=prod, beta.sum=1)
 m1c$parameters
 m1c$efficiency[which(m1c$efficiency$y.side==1),]
 plot(m1c, cex.axis=1.1, cex.lab=1.2, main="beta = 1", cex.main=1.6)
 
 # beta=1.25 (increasing returns to scale)
-m1i <- CobbDouglas("output", "labour", data=proc, beta.sum=1.25)
+m1i <- CobbDouglas("output", "labour", data=prod, beta.sum=1.25)
 m1i$parameters
 m1i$efficiency[which(m1i$efficiency$y.side==1),]
 plot(m1i, cex.axis=1.1, cex.lab=1.2, main="beta = 1.25", cex.main=1.6)
 
 # beta=0.3 (decreasing returns to scale)
-m1d <- CobbDouglas("output", "labour", data=proc, beta.sum=0.3)
+m1d <- CobbDouglas("output", "labour", data=prod, beta.sum=0.3)
 m1d$parameters
 m1d$efficiency[which(m1d$efficiency$y.side==1),]
 plot(m1d, cex.axis=1.1, cex.lab=1.2, main="beta = 0.3", cex.main=1.6)
@@ -103,17 +104,17 @@ plot(m1d, cex.axis=1.1, cex.lab=1.2, main="beta = 0.3", cex.main=1.6)
 ### 2 input variables: 'labour' and 'capital'
 
 # no constraints on the sum of beta parameters
-m2 <- CobbDouglas("output", c("labour","capital"), data=proc)
+m2 <- CobbDouglas("output", c("labour","capital"), data=prod)
 summary(m2)
 m2$efficiency[which(m2$efficiency$y.side==1),]
 
 # beta.sum=1 (constant returns to scale)
-m2c <- CobbDouglas("output", c("labour","capital"), data=proc, beta.sum=1)
+m2c <- CobbDouglas("output", c("labour","capital"), data=prod, beta.sum=1)
 summary(m2c)
 m2c$efficiency[which(m2c$efficiency$y.side==1),]
 
 # beta.sum=0.7 (decreasing returns to scale)
-m2d <- CobbDouglas("output", c("labour","capital"), data=proc, beta.sum=0.7)
+m2d <- CobbDouglas("output", c("labour","capital"), data=prod, beta.sum=0.7)
 summary(m2d)
 m2d$efficiency[which(m2d$efficiency$y.side==1),]
 }
