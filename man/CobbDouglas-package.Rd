@@ -1,11 +1,9 @@
 \name{CobbDouglas-package}
 \alias{CobbDouglas-package}
 \docType{package}
-\title{Estimation and efficiency analysis for the Cobb-Douglas production frontier}
-\description{Functionalities to estimate a Cobb-Douglas production frontier from sample data through constrained least squares
-(possibly setting the desired returns to scale),
-to predict the maximum producible output or technical efficiency,
-and to obtain boostrap confidence intervals for parameters and fitted values.}
+\title{Efficiency analysis using the Cobb-Douglas production frontier}
+\description{Functionalities to estimate a Cobb-Douglas production frontier from sample data through constrained least squares.
+It is possible to set the desired returns to scale, to predict the maximum producible output or technical efficiency, and to obtain boostrap confidence intervals for parameters.}
 \details{
   \tabular{ll}{
   Package: \tab CobbDouglas\cr
@@ -18,7 +16,7 @@ The main functions of the package are:
 \itemize{
   \item{\link{CobbDouglas}, }{to estimate the frontier from sample data;}
   \item{\link{predict.CobbDouglas}, }{to predict the maximum producible output or technical efficiency;}
-  \item{\link{CobbDouglas_boot}, }{to obtain bootstrap confidence intervals for parameters and fitted values.}
+  \item{\link{CobbDouglas_boot}, }{to obtain bootstrap confidence intervals for parameters.}
   }
 }
 \author{Alessandro Magrini <alessandro.magrini@unifi.it>}

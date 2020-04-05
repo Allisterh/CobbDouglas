@@ -51,7 +51,7 @@ S3 methods available for class \code{CobbDouglas} are:
   \item{\code{plot}: }{ to display the scatterplot with the estimated frontier (only for frontiers with a single input).}
   \item{\code{predict}: }{ to predict the maximum producible output or technical efficiency. See \link{predict.CobbDouglas}.}
   }
-Also, the method \link{CobbDouglas_boot} is available to approximate confidence intervals of parameters and fitted values.
+Also, the method \link{CobbDouglas_boot} is available to approximate confidence intervals for parameters.
 }
 %note{}
 \author{Alessandro Magrini <alessandro.magrini@unifi.it>}

@@ -99,8 +99,7 @@ print.CobbDouglas <- function(x,...) {
 summary.CobbDouglas <- function(object,...) {
   par <- object$parameters
   res <- list(n.input=length(object$x.names),parameters=par,
-    sigma=apply(object$residuals,2,function(y){sd(y)*(length(y)-1)/length(y)}),
-    efficiency=summary(object$efficiency))
+    eff=round(colMeans(object$efficiency),3))
   class(res) <- "summary.CobbDouglas"
   res
   }
@@ -111,9 +110,7 @@ print.summary.CobbDouglas <- function(x,...) {
   cat("Estimated parameters:","\n")
   print(x$parameters)
   cat("\n")
-  cat("Residual std. dev.: ",x$sigma[1]," (log. scale)  ",x$sigma[2]," (orig. scale)",sep="","\n","\n")
-  cat("Technical efficiencies: ","\n")
-  print(x$efficiency)
+  cat("Average efficiency: ",x$eff[1]," (output-side) and ",x$eff[2]," (input-side)",sep="","\n")
   }
 
 # predict method
@@ -183,38 +180,30 @@ CobbDouglas_boot <- function(x,nboot=500,conf=0.95) {
   xnam <- x$x.names
   k <- x$beta.sum
   bhat <- matrix(nrow=0,ncol=length(x$parameters))
-  ystar <- matrix(nrow=0,ncol=nrow(data))
+  effy <- effx <- matrix(nrow=0,ncol=nrow(data))
   count <- 0
   while(count<nboot) {
     ind <- sample(1:nrow(data),nrow(data),replace=T)
     idat <- data[ind,]
     imod <- CobbDouglas(y.name=ynam,x.names=xnam,data=idat,beta.sum=k)
     bhat <- rbind(bhat,imod$parameters)
-    ystar <- rbind(ystar,imod$fitted$orig.scale)
+    effy <- rbind(effy,imod$efficiency$y.side)
+    effx <- rbind(effx,imod$efficiency$x.side)
     count <- count+1
     }
-  rownames(bhat) <- rownames(ystar) <- NULL
   colnames(bhat) <- names(x$parameters)
-  colnames(ystar) <- rownames(data)
+  colnames(effy) <- colnames(effx) <- rownames(data)
   par <- x$parameters
   bsum_res <- apply(bhat[,2:ncol(bhat),drop=F],1,sum)
   bsum_est <- sum(par[2:length(par)])
   bsum_nam <- "(beta.sum)"
   b_res <- cbind(bhat,bsum_res)
   est <- c(par,bsum_est)
-  #summ <- cbind(est,t(apply(b_res,2,quantile,prob=c(1-conf,1+conf)/2)))
-  #summ_y <- cbind(x$fitted$orig.scale,t(apply(ystar,2,quantile,prob=c(1-conf,1+conf)/2)))  
   summ <- cbind(est,t(apply(b_res,2,emp.hpd,conf=conf)))
-  summ_y <- cbind(x$fitted$orig.scale,t(apply(ystar,2,emp.hpd,conf=conf)))
-  colnames(summ) <- colnames(summ_y) <- c("Estimate",paste(round(c(1-conf,1+conf)/2*100,2),"%",sep=""))
+  summ_effy <- cbind(x$efficiency$y.side,t(apply(effy,2,emp.hpd,conf=conf)))
+  summ_effx <- cbind(x$efficiency$x.side,t(apply(effx,2,emp.hpd,conf=conf)))
+  colnames(summ) <- colnames(summ_effy) <- colnames(summ_effx) <- c("Estimate",paste(round(c(1-conf,1+conf)/2*100,2),"%",sep=""))
   rownames(summ) <- c("(tau)",names(par)[2:length(par)],bsum_nam)
-  rownames(summ_y) <- rownames(data)
-  res <- list(parameters=summ,fitted=summ_y)  #boot.parameters=bhat,boot.fitted=ystar)
-  class(res) <- "CobbDouglas_boot"
-  res
-  }
-
-# print method for class CobbDouglas_boot
-print.CobbDouglas_boot <- function(x, ...) {
-  print(x$parameters)
+  rownames(summ_effy) <- rownames(summ_effx) <- rownames(data)
+  summ
   }
