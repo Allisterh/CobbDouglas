@@ -79,26 +79,11 @@ m1_eff <- m1$efficiency
 # efficient units
 m1_eff[which(m1_eff$y.side==1),]
 
-
-### 1 input variable: 'labour' + constraint on beta
-
-# beta=1 (constant returns to scale)
+# setting beta=1 (constant returns to scale) seems not so good
 m1c <- CobbDouglas("output", "labour", data=prod, beta.sum=1)
 m1c$parameters
 m1c$efficiency[which(m1c$efficiency$y.side==1),]
 plot(m1c, cex.axis=1.1, cex.lab=1.2, main="beta = 1", cex.main=1.6)
-
-# beta=1.25 (increasing returns to scale)
-m1i <- CobbDouglas("output", "labour", data=prod, beta.sum=1.25)
-m1i$parameters
-m1i$efficiency[which(m1i$efficiency$y.side==1),]
-plot(m1i, cex.axis=1.1, cex.lab=1.2, main="beta = 1.25", cex.main=1.6)
-
-# beta=0.3 (decreasing returns to scale)
-m1d <- CobbDouglas("output", "labour", data=prod, beta.sum=0.3)
-m1d$parameters
-m1d$efficiency[which(m1d$efficiency$y.side==1),]
-plot(m1d, cex.axis=1.1, cex.lab=1.2, main="beta = 0.3", cex.main=1.6)
 
 
 ### 2 input variables: 'labour' and 'capital'

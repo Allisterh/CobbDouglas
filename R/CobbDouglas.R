@@ -98,8 +98,8 @@ print.CobbDouglas <- function(x,...) {
 # summary method
 summary.CobbDouglas <- function(object,...) {
   par <- object$parameters
-  res <- list(n.input=length(object$x.names),parameters=par,
-    eff=round(colMeans(object$efficiency),3))
+  parOK <- c(par,'(beta.sum)'=sum(par[2:length(par)]))
+  res <- list(n.input=length(object$x.names),parameters=parOK,eff=summary(object$efficiency))
   class(res) <- "summary.CobbDouglas"
   res
   }
@@ -110,7 +110,8 @@ print.summary.CobbDouglas <- function(x,...) {
   cat("Estimated parameters:","\n")
   print(x$parameters)
   cat("\n")
-  cat("Average efficiency: ",x$eff[1]," (output-side) and ",x$eff[2]," (input-side)",sep="","\n")
+  cat("Technical efficiencies:","\n")
+  print(x$eff)
   }
 
 # predict method
