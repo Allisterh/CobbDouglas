@@ -69,9 +69,11 @@ CobbDouglas <-  function(y.name,x.names=NULL,data,beta.sum=NULL) {
   parOK <- par
   parOK[1] <- exp(par[1])
   names(parOK) <- c("(tau)",xlab)
+  bsum <- sum(par[2:length(par)])
+  if(bsum<=0) stop("The estimated frontier is not an increasing function. Please check your data")
   fitted <- exp(ystar)
   effy <- exp(y)/fitted
-  effx <- effy^(1/sum(par[2:length(par)]))
+  effx <- effy^(1/bsum)
   effMat <- round(data.frame(y.side=effy,x.side=effx),3)
   fittedMat <- data.frame(log.scale=ystar,orig.scale=fitted)
   residMat <- data.frame(log.scale=y-ystar,orig.scale=yorig-fitted)  
@@ -163,9 +165,33 @@ plot.CobbDouglas <- function(x,xlab=NULL,ylab=NULL,...) {
   yseq <- predict(x, newdata=newdat)
   if(is.null(xlab)) xlab <- xnam
   if(is.null(ylab)) ylab <- ynam
-  plot(v, y, ylim=c(0,max(yseq)), xlab=xlab, ylab=ylab, ...)
+  plot(v, y, ylim=c(0,max(yseq,na.rm=T)), xlab=xlab, ylab=ylab, ...)
   grid()
   lines(xseq, yseq, col=2)
+  }
+
+# number of decimals (auxiliary)
+ndigits <- function(x) {
+  h <- options()$scipen
+  options(scipen=999)
+  if((x%%1)!=0) {
+    n <- nchar(strsplit(sub('0+$', '', as.character(x)), ".", fixed=T)[[1]][[2]])
+    } else {
+    n <- 0
+    }
+  options(scipen=h)
+  n
+  }
+
+# hpd calculation (auxiliary)
+hpdCalc <- function(x, conf=0.95) {
+  n <- length(x)
+  nn <- round(n*(1-conf))
+  x <- sort(x)
+  xx <- x[(n-nn+1):n]-x[1:nn]
+  m <- min(xx)
+  nnn <- which(xx==m)[1]
+  c(x[nnn],x[n-nn+nnn])
   }
 
 # bootstrap
@@ -180,6 +206,9 @@ CobbDouglas_boot <- function(x,nboot=500,conf=0.95) {
   ynam <- x$y.name
   xnam <- x$x.names
   k <- x$beta.sum
+  par <- x$parameters
+  ndig <- max(sapply(par,ndigits))
+  thresh <- 10^(-ndig)
   bhat <- matrix(nrow=0,ncol=length(x$parameters))
   effy <- effx <- matrix(nrow=0,ncol=nrow(data))
   count <- 0
@@ -187,22 +216,23 @@ CobbDouglas_boot <- function(x,nboot=500,conf=0.95) {
     ind <- sample(1:nrow(data),nrow(data),replace=T)
     idat <- data[ind,]
     imod <- CobbDouglas(y.name=ynam,x.names=xnam,data=idat,beta.sum=k)
-    bhat <- rbind(bhat,imod$parameters)
+    ipar <- imod$parameters
+    ipar[which(ipar<thresh)] <- 0
+    bhat <- rbind(bhat,ipar)
     effy <- rbind(effy,imod$efficiency$y.side)
     effx <- rbind(effx,imod$efficiency$x.side)
     count <- count+1
     }
   colnames(bhat) <- names(x$parameters)
   colnames(effy) <- colnames(effx) <- rownames(data)
-  par <- x$parameters
   bsum_res <- apply(bhat[,2:ncol(bhat),drop=F],1,sum)
   bsum_est <- sum(par[2:length(par)])
   bsum_nam <- "(beta.sum)"
   b_res <- cbind(bhat,bsum_res)
   est <- c(par,bsum_est)
-  summ <- cbind(est,t(apply(b_res,2,emp.hpd,conf=conf)))
-  summ_effy <- cbind(x$efficiency$y.side,t(apply(effy,2,emp.hpd,conf=conf)))
-  summ_effx <- cbind(x$efficiency$x.side,t(apply(effx,2,emp.hpd,conf=conf)))
+  summ <- data.frame(est,t(apply(b_res,2,hpdCalc,conf=conf)))
+  summ_effy <- data.frame(x$efficiency$y.side,t(apply(effy,2,hpdCalc,conf=conf)))
+  summ_effx <- data.frame(x$efficiency$x.side,t(apply(effx,2,hpdCalc,conf=conf)))
   colnames(summ) <- colnames(summ_effy) <- colnames(summ_effx) <- c("Estimate",paste(round(c(1-conf,1+conf)/2*100,2),"%",sep=""))
   rownames(summ) <- c("(tau)",names(par)[2:length(par)],bsum_nam)
   rownames(summ_effy) <- rownames(summ_effx) <- rownames(data)
