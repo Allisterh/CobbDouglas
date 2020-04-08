@@ -46,7 +46,7 @@ m1c$parameters
 m1c$efficiency[which(m1c$efficiency$y.side==1),]
 plot(m1c, cex.axis=1.1, cex.lab=1.2, main="beta = 1", cex.main=1.6)
 ```
-Frontier with 2 input variables: 'labour' and 'capital' + constraint on the sum of beta parameters
+Frontier with 2 input variables: 'labour' and 'capital'
 ```
 # no constraints on the sum of beta parameters
 m2 <- CobbDouglas("output", c("labour","capital"), data=prod)
