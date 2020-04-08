@@ -22,11 +22,11 @@ _________________________________________________________________
 
 Load simulated data
 ```
-data(prod)
+data(production)
 ```
 Frontier with 1 input variable: 'labour'
 ```
-m1 <- CobbDouglas("output", "labour", data=prod)
+m1 <- CobbDouglas("output", "labour", data=production)
 summary(m1)
 
 # plot the estimated frontier
@@ -41,7 +41,7 @@ m1_eff <- m1$efficiency
 m1_eff[which(m1_eff$y.side==1),]
 
 # setting beta=1 (constant returns to scale) seems not so good
-m1c <- CobbDouglas("output", "labour", data=prod, beta.sum=1)
+m1c <- CobbDouglas("output", "labour", data=production, beta.sum=1)
 m1c$parameters
 m1c$efficiency[which(m1c$efficiency$y.side==1),]
 plot(m1c, cex.axis=1.1, cex.lab=1.2, main="beta = 1", cex.main=1.6)
@@ -49,17 +49,17 @@ plot(m1c, cex.axis=1.1, cex.lab=1.2, main="beta = 1", cex.main=1.6)
 Frontier with 2 input variables: 'labour' and 'capital'
 ```
 # no constraints on the sum of beta parameters
-m2 <- CobbDouglas("output", c("labour","capital"), data=prod)
+m2 <- CobbDouglas("output", c("labour","capital"), data=production)
 summary(m2)
 m2$efficiency[which(m2$efficiency$y.side==1),]
 
 # beta.sum=1 (constant returns to scale)
-m2c <- CobbDouglas("output", c("labour","capital"), data=prod, beta.sum=1)
+m2c <- CobbDouglas("output", c("labour","capital"), data=production, beta.sum=1)
 summary(m2c)
 m2c$efficiency[which(m2c$efficiency$y.side==1),]
 
 # beta.sum=0.7 (decreasing returns to scale)
-m2d <- CobbDouglas("output", c("labour","capital"), data=prod, beta.sum=0.7)
+m2d <- CobbDouglas("output", c("labour","capital"), data=production, beta.sum=0.7)
 summary(m2d)
 m2d$efficiency[which(m2d$efficiency$y.side==1),]
 ```
