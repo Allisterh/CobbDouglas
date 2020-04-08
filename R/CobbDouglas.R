@@ -183,15 +183,21 @@ ndigits <- function(x) {
   n
   }
 
-# hpd calculation (auxiliary)
-hpdCalc <- function(x, conf=0.95) {
-  n <- length(x)
-  nn <- round(n*(1-conf))
-  x <- sort(x)
-  xx <- x[(n-nn+1):n]-x[1:nn]
-  m <- min(xx)
-  nnn <- which(xx==m)[1]
-  c(x[nnn],x[n-nn+nnn])
+# bias-corrected CI (auxiliary)
+bc_ci <- function(boot,stat,conf=0.95) {
+  b <- qnorm(mean(boot>stat))
+  z <- qnorm(c(1-conf,conf)/2)
+  p <- pnorm(z-2*b)
+  quantile(boot,prob=p)
+  }
+
+# compute CI for a boostrap simulation (auxiliary)
+ciCalc <- function(boot,stat,conf=0.95) {
+  res <- c()
+  for(i in 1:ncol(boot)) {
+    res <- rbind(res,bc_ci(boot[,i],stat[i],conf=conf))
+    }
+  data.frame(stat,res)
   }
 
 # bootstrap
@@ -207,8 +213,7 @@ CobbDouglas_boot <- function(x,nboot=500,conf=0.95) {
   xnam <- x$x.names
   k <- x$beta.sum
   par <- x$parameters
-  ndig <- max(sapply(par,ndigits))
-  thresh <- 10^(-ndig)
+  thresh <- 10^(-max(sapply(par[2:length(par)],ndigits)))  #####
   bhat <- matrix(nrow=0,ncol=length(x$parameters))
   effy <- effx <- matrix(nrow=0,ncol=nrow(data))
   count <- 0
@@ -217,7 +222,7 @@ CobbDouglas_boot <- function(x,nboot=500,conf=0.95) {
     idat <- data[ind,]
     imod <- CobbDouglas(y.name=ynam,x.names=xnam,data=idat,beta.sum=k)
     ipar <- imod$parameters
-    ipar[which(ipar<thresh)] <- 0
+    ipar[which(ipar<=thresh)] <- 0  #####
     bhat <- rbind(bhat,ipar)
     effy <- rbind(effy,imod$efficiency$y.side)
     effx <- rbind(effx,imod$efficiency$x.side)
@@ -230,11 +235,19 @@ CobbDouglas_boot <- function(x,nboot=500,conf=0.95) {
   bsum_nam <- "(beta.sum)"
   b_res <- cbind(bhat,bsum_res)
   est <- c(par,bsum_est)
-  summ <- data.frame(est,t(apply(b_res,2,hpdCalc,conf=conf)))
-  summ_effy <- data.frame(x$efficiency$y.side,t(apply(effy,2,hpdCalc,conf=conf)))
-  summ_effx <- data.frame(x$efficiency$x.side,t(apply(effx,2,hpdCalc,conf=conf)))
-  colnames(summ) <- colnames(summ_effy) <- colnames(summ_effx) <- c("Estimate",paste(round(c(1-conf,1+conf)/2*100,2),"%",sep=""))
+  summ <- ciCalc(b_res,est,conf=conf)
   rownames(summ) <- c("(tau)",names(par)[2:length(par)],bsum_nam)
+  colnames(summ) <- c("Estimate",paste(round(c(1-conf,1+conf)/2*100,2),"%",sep=""))
+  summ_effy <- ciCalc(effy,x$efficiency$y.side,conf=conf)
+  summ_effx <- ciCalc(effx,x$efficiency$x.side,conf=conf)
+  colnames(summ_effy) <- colnames(summ_effx) <- c("Estimate",paste(round(c(1-conf,1+conf)/2*100,2),"%",sep=""))
   rownames(summ_effy) <- rownames(summ_effx) <- rownames(data)
-  summ
+  res <- list(parameters=summ,y.side=summ_effy,x.side=summ_effx)
+  class(res) <- "CobbDouglas_boot"
+  res
+  }
+
+# print method for the boot method
+print.CobbDouglas_boot <- function(x,...) {
+  print(x$parameters)
   }

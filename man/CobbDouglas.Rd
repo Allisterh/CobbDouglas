@@ -11,9 +11,9 @@
 }
 \value{An object of class \code{CobbDouglas}, that is a list with the following components:
   \item{\code{parameters}}{Parameter estimates.}
-  \item{\code{efficiency}}{Technical efficiencies of the sample units.}
-  \item{\code{fitted}}{Fitted values on both logarithmic and original scale.}
-  \item{\code{residuals}}{Residuals on both logarithmic and original scale.}
+  \item{\code{efficiency}}{Output-side (\code{y.side}) and input-side (\code{x.side}) technical efficiencies of the sample units.}
+  \item{\code{fitted}}{Fitted values on logarithmic (\code{log.scale}) and original (\code{orig.scale}) scale.}
+  \item{\code{residuals}}{Residuals on logarithmic (\code{log.scale}) and original (\code{orig.scale}) scale.}
   \item{\code{beta.sum}}{Value passed to argument \code{beta.sum}.}
   \item{\code{y.name}}{Value passed to argument \code{y.name}.}
   \item{\code{x.names}}{Value passed to argument \code{x.names}.}
