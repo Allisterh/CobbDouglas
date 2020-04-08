@@ -13,6 +13,9 @@ CobbDouglas <-  function(y.name,x.names=NULL,data,beta.sum=NULL) {
   auxchk <- setdiff(x.names,colnames(data))
   if(length(auxchk)>0) stop("Variable '",auxchk[1],"' not found",sep="")
   if(sum(is.na(data[,c(y.name,x.names)]))>0) stop("Missing values found in data")
+  if(sum(data[,y.name]<=0)>0) stop("Null or negative values found for variable '",y.name,"'",sep="")
+  xchk <- names(which(apply(data[,x.names,drop=F],2,function(z){sum(z<=0)})>0))
+  if(length(xchk)>0) stop("Null or negative values found for variable '",xchk[1],"'",sep="")
   if(length(beta.sum)>1) beta.sum <- beta.sum[1]
   if(!is.null(beta.sum) & (!is.numeric(beta.sum) || beta.sum<=0)) stop("Argument 'beta.sum' must be a strictly positive value")
   n <- nrow(data)
@@ -131,14 +134,17 @@ predict.CobbDouglas <- function(object,newdata=NULL,type="output",...) {
     if(sum(is.na(newdata[,xnam]))>0) stop("Missing values found in 'newdata'")
     auxchk <- setdiff(xnam,colnames(newdata))
     if(length(auxchk)>0) stop("Input variable '",auxchk[1],"' not found",sep="")
+    xchk <- names(which(apply(newdata[,xnam,drop=F],2,function(z){sum(z<=0)})>0))
+    if(length(xchk)>0) stop("Null or negative values found for variable '",xchk[1],"'",sep="")
     xval <- as.matrix(log(newdata[,xnam,drop=F]))
     X <- cbind(rep(1,nrow(xval)),xval)
     res <- c(exp(X%*%par))
     names(res) <- rownames(newdata)
     if(type==auxtype[2]) {
       ynam <- object$y.name
-      if((ynam%in%colnames(newdata))==F) stop("Output variable '",ynam,"' not found",sep="")
+      if((ynam%in%colnames(newdata))==F) stop("Output variable '",ynam,"' not found in 'newdata'",sep="")
       if(sum(is.na(newdata[,ynam]))>0) stop("Missing values found in 'newdata'")
+      if(sum(newdata[,ynam]<=0)>0) stop("Null or negative values found for variable '",ynam,"'",sep="")
       effy <- round(newdata[,ynam]/res,3)
       effx <- round(effy^(1/sum(par[2:length(par)])),3)
       if(sum(effy>1)|sum(effx>1)) warning("Some points are above the frontier")
