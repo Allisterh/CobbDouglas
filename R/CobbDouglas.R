@@ -166,6 +166,7 @@ plot.CobbDouglas <- function(x,xlab=NULL,ylab=NULL,...) {
   y <- data[,ynam]
   v <- data[,xnam]
   xseq <- seq(0, max(v), length=1000)
+  xseq[1] <- 1e-12
   newdat <- data.frame(xseq)
   colnames(newdat) <- xnam
   yseq <- predict(x, newdata=newdat)

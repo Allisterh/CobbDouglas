@@ -19,8 +19,8 @@ C. W. Cobb and P. H. Douglas (1928). A Theory of Production. \emph{American Econ
 }
 \seealso{\link{CobbDouglas}.}
 \examples{
-data(prod)
-m2 <- CobbDouglas("output", c("labour","capital"), data=prod)
+data(production)
+m2 <- CobbDouglas("output", c("labour","capital"), data=production)
 
 # prediction of the maximum producible output
 predict(m2, newdata=data.frame(labour=20,capital=5))

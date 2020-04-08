@@ -18,17 +18,17 @@ B. Efron (1979). Bootstrap Methods: Another Look at the Jackknife. \emph{The Ann
 }
 \seealso{\link{CobbDouglas}.}
 \examples{
-data(prod)
+data(production)
 
-m2 <- CobbDouglas("output", c("labour","capital"), data=prod)
+m2 <- CobbDouglas("output", c("labour","capital"), data=production)
 set.seed(123)
 CobbDouglas_boot(m2, nboot=150)
 
-m2c <- CobbDouglas("output", c("labour","capital"), data=prod, beta.sum=1)
+m2c <- CobbDouglas("output", c("labour","capital"), data=production, beta.sum=1)
 set.seed(123)
 CobbDouglas_boot(m2c, nboot=150)
 
-m2d <- CobbDouglas("output", c("labour","capital"), data=prod, beta.sum=0.7)
+m2d <- CobbDouglas("output", c("labour","capital"), data=production, beta.sum=0.7)
 set.seed(123)
 CobbDouglas_boot(m2d, nboot=150)
 }
