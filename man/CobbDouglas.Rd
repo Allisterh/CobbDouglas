@@ -12,8 +12,8 @@
 \value{An object of class \code{CobbDouglas}, that is a list with the following components:
   \item{\code{parameters}}{Parameter estimates.}
   \item{\code{efficiency}}{Output-side (\code{y.side}) and input-side (\code{x.side}) technical efficiencies of the sample units.}
-  \item{\code{fitted}}{Fitted values on logarithmic (\code{log.scale}) and original (\code{orig.scale}) scale.}
-  \item{\code{residuals}}{Residuals on logarithmic (\code{log.scale}) and original (\code{orig.scale}) scale.}
+  \item{\code{fitted}}{Fitted values, equal to the logarithm of the maximum producible output for each unit.}
+  \item{\code{residuals}}{Residuals, equal to the logarithm of output-side technical efficiencies.}
   \item{\code{beta.sum}}{Value passed to argument \code{beta.sum}.}
   \item{\code{y.name}}{Value passed to argument \code{y.name}.}
   \item{\code{x.names}}{Value passed to argument \code{x.names}.}
@@ -48,7 +48,7 @@ S3 methods available for class \code{CobbDouglas} are:
 \itemize{
   \item{\code{print}: }{ to get essential information.}
   \item{\code{summary}: }{ to get summaries of estimation.}
-  \item{\code{plot}: }{ to display the scatterplot with the estimated frontier (only for frontiers with a single input).}
+  \item{\code{plot}: }{ to display the scatterplot with the estimated frontier (see the examples below).}
   \item{\code{predict}: }{ to predict the maximum producible output or technical efficiency. See \link{predict.CobbDouglas}.}
   }
 Also, the method \link{CobbDouglas_boot} is available to approximate confidence intervals for parameters.
@@ -92,6 +92,18 @@ plot(m1c, cex.axis=1.1, cex.lab=1.2, main="beta = 1", cex.main=1.6)
 m2 <- CobbDouglas("output", c("labour","capital"), data=production)
 summary(m2)
 m2$efficiency[which(m2$efficiency$y.side==1),]
+
+## plot the estimated frontier from the side of 'labour'
+# 'capital' fixed at its empirical mean
+plot(m2, x.name="labour", cex.axis=1.1, cex.lab=1.2)
+# 'capital' fixed at value 1
+plot(m2, x.name="labour", x.fixed=c(capital=1), cex.axis=1.1, cex.lab=1.2)
+
+## plot the estimated frontier from the side of 'capital'
+# 'labour' fixed at its empirical mean
+plot(m2, x.name="capital", cex.axis=1.1, cex.lab=1.2)
+# 'labour' fixed at value 1
+plot(m2, x.name="capital", x.fixed=c(labour=1), cex.axis=1.1, cex.lab=1.2)
 
 # beta.sum=1 (constant returns to scale)
 m2c <- CobbDouglas("output", c("labour","capital"), data=production, beta.sum=1)

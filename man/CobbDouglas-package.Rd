@@ -8,8 +8,8 @@ It is possible to set the desired returns to scale, to predict the maximum produ
   \tabular{ll}{
   Package: \tab CobbDouglas\cr
   Type: \tab Package\cr
-  Version: \tab 1.0\cr
-  Date: \tab 2020-04-08\cr
+  Version: \tab 0.1\cr
+  Date: \tab 2021-04-13\cr
   License: \tab GPL-2
   }
 The main functions of the package are:

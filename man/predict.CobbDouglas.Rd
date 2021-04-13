@@ -1,7 +1,7 @@
 \name{predict.CobbDouglas}
 \alias{predict.CobbDouglas}
 \title{Prediction using a Cobb-Douglas production frontier}
-\description{Prediction of the maximum producible output or of technical efficiency using a Cobb-Douglas production frontier.}
+\description{Predict the maximum producible output or technical efficiency using a Cobb-Douglas production frontier.}
 \usage{
 \method{predict}{CobbDouglas}(object, newdata=NULL, type="output", ...)
 }

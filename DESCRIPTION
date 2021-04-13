@@ -1,7 +1,7 @@
 Package: CobbDouglas
 Type: Package
 Title: Efficiency Analysis using the Cobb-Douglas Production Frontier
-Version: 1.0
+Version: 0.1
 Date: 2020-04-08
 Author: Alessandro Magrini
 Maintainer: Alessandro Magrini <alessandro.magrini@unifi.it>
@@ -10,4 +10,4 @@ Depends: R (>= 3.5.0), quadprog
 Imports: graphics, stats
 License: GPL-2
 NeedsCompilation: no
-Packaged: 2020-04-08 15:19:51 UTC; Alessandro
+Packaged: 2021-04-13 09:25:24 UTC; Alessandro

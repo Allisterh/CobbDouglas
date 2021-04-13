@@ -74,14 +74,13 @@ CobbDouglas <-  function(y.name,x.names=NULL,data,beta.sum=NULL) {
   names(parOK) <- c("(tau)",xlab)
   bsum <- sum(par[2:length(par)])
   if(bsum<=0) stop("The estimated frontier is not an increasing function. Please check your data")
-  fitted <- exp(ystar)
-  effy <- exp(y)/fitted
+  effy <- exp(y)/exp(ystar)
   effx <- effy^(1/bsum)
   effMat <- round(data.frame(y.side=effy,x.side=effx),3)
-  fittedMat <- data.frame(log.scale=ystar,orig.scale=fitted)
-  residMat <- data.frame(log.scale=y-ystar,orig.scale=yorig-fitted)  
-  rownames(effMat) <- rownames(fittedMat) <- rownames(residMat) <- rownames(data)
-  OUT <- list(parameters=parOK,efficiency=effMat,fitted=fittedMat,residuals=residMat,
+  fitted <- ystar
+  resid <- y-ystar
+  rownames(effMat) <- names(fitted) <- names(resid) <- rownames(data)
+  OUT <- list(parameters=parOK,efficiency=effMat,fitted=fitted, residuals=resid,
     beta.sum=beta.sum,y.name=y.name,x.names=x.names,data=data[,c(y.name,x.names)])
   class(OUT) <- "CobbDouglas"
   OUT
@@ -126,7 +125,7 @@ predict.CobbDouglas <- function(object,newdata=NULL,type="output",...) {
   auxtype <- substr(c("output","efficiency"),1,nchar(type))
   if((type%in%auxtype)==F) stop("Argument 'type' must be either 'output' or 'efficiency'")
   if(is.null(newdata)) {
-    if(type==auxtype[2]) object$efficiency else object$fitted
+    if(type==auxtype[2]) object$efficiency else exp(object$fitted)
     } else {
     auxpar <- par <- object$parameters
     par[1] <- log(auxpar[1])
@@ -158,23 +157,67 @@ predict.CobbDouglas <- function(object,newdata=NULL,type="output",...) {
   }
 
 # plot method
-plot.CobbDouglas <- function(x,xlab=NULL,ylab=NULL,...) {
+plot.CobbDouglas <- function(x,x.name=NULL,x.fixed=NULL,xlab=NULL,ylab=NULL,add.points=TRUE,add.grid=TRUE,add.legend=TRUE,cex.legend=0.9,digits=3,col="red",...) {
+  #
+  if(!is.logical(add.grid)) add.grid <- T
+  add.grid <- add.grid[1]
+  if(!is.logical(add.points)) add.points <- T
+  add.points <- add.points[1]
+  if(!is.logical(add.legend)) add.legend <- T
+  add.legend <- add.legend[1]
+  #
   xnam <- x$x.names
-  if(length(xnam)!=1) stop("Currently implemented only for 1 input variable")
   ynam <- x$y.name
   data <- x$data
+  if(is.null(x.name)) {
+    x.name <- xnam[1]
+    } else {
+    if(length(setdiff(x.name,xnam))>0) stop("Unknown variable '",x.name[1],"'")
+    }
   y <- data[,ynam]
-  v <- data[,xnam]
+  v <- data[,x.name]
   xseq <- seq(0, max(v), length=1000)
   xseq[1] <- 1e-12
-  newdat <- data.frame(xseq)
-  colnames(newdat) <- xnam
+  if(length(xnam)==1) {
+    newdat <- data.frame(xseq)
+    colnames(newdat) <- xnam
+    } else {
+    xnam2 <- setdiff(xnam,x.name)
+    if(is.null(x.fixed)) {
+      x.fixed <- apply(data[,xnam2,drop=F],2,mean,na.rm=T)
+      } else {
+      auxch <- setdiff(xnam2, names(x.fixed))
+      if(length(auxch)>0) {
+        warnings("Invalid value passed to argument 'x.fixed': empirical means have been used")
+        x.fixed <- apply(data[,xnam2,drop=F],2,mean,na.rm=T)
+        } else {
+        x.fixed <- x.fixed[xnam2]
+        }
+      }
+    newdat <- data.frame(xseq, t(replicate(length(xseq),x.fixed)))
+    colnames(newdat) <- c(x.name, xnam2)
+    }
   yseq <- predict(x, newdata=newdat)
-  if(is.null(xlab)) xlab <- xnam
+  if(is.null(xlab)) xlab <- x.name
   if(is.null(ylab)) ylab <- ynam
-  plot(v, y, ylim=c(0,max(yseq,na.rm=T)), xlab=xlab, ylab=ylab, ...)
-  grid()
-  lines(xseq, yseq, col=2)
+  if(length(xnam)==1) {
+    if(add.points) {
+      plot(v, y, ylim=c(0,max(yseq,na.rm=T)), xlab=xlab, ylab=ylab, ...)
+      } else {
+      plot(xseq, yseq, ylim=c(0,max(yseq,na.rm=T)), type="n", xlab=xlab, ylab=ylab, ...)
+      }
+    } else {
+    plot(xseq, yseq, ylim=c(0,max(yseq,na.rm=T)), type="n", xlab=xlab, ylab=ylab, ...)
+    }
+  if(add.grid) grid()
+  lines(xseq, yseq, col=col)
+  if(length(xnam)>1) {  
+    if(add.legend) {
+      legend("topleft", legend=paste(xnam2," = ",round(x.fixed,digits),sep=""),
+        cex=cex.legend, bty="n")
+      }
+    }
+  box()
   }
 
 # number of decimals (auxiliary)
