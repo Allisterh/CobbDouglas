@@ -40,7 +40,7 @@ m1_eff <- m1$efficiency
 # efficient units
 m1_eff[which(m1_eff$y.side==1),]
 
-# setting beta=1 (constant returns to scale) seems not so good
+# setting beta=1 (constant returns to scale) seems to fit worse
 m1c <- CobbDouglas("output", "labour", data=production, beta.sum=1)
 m1c$parameters
 m1c$efficiency[which(m1c$efficiency$y.side==1),]
@@ -81,7 +81,7 @@ predict(m2, newdata=data.frame(labour=20,capital=5))
 ```
 Prediction of technical efficiency
 ```
-predict(m2, newdata=data.frame(output=15,labour=20,capital=5), type="eff")
+predict(m2, newdata=data.frame(output=11.5,labour=20,capital=5), type="eff")
 ```
 Bootstrap confidence intervals
 ```
