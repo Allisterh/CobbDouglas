@@ -1,7 +1,7 @@
 \name{predict.CobbDouglas}
 \alias{predict.CobbDouglas}
-\title{Prediction using a Cobb-Douglas production frontier}
-\description{Predict the maximum producible output or technical efficiency using a Cobb-Douglas production frontier.}
+\title{Prediction based on an estimated Cobb-Douglas production frontier}
+\description{Predict the maximum producible output or technical efficiency based on an estimated Cobb-Douglas production frontier.}
 \usage{
 \method{predict}{CobbDouglas}(object, newdata=NULL, type="output", ...)
 }
@@ -13,7 +13,7 @@
 }
 \value{An object of class \code{data.frame}.}
 %\note{}
-\author{Alessandro Magrini <alessandro.magrini@unifi.it>}
+%\author{Alessandro Magrini <alessandro.magrini@unifi.it>}
 \references{
 C. W. Cobb and P. H. Douglas (1928). A Theory of Production. \emph{American Economic Review}, 18: 139-165.
 }

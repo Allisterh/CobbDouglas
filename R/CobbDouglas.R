@@ -76,7 +76,7 @@ CobbDouglas <-  function(y.name,x.names=NULL,data,beta.sum=NULL) {
   if(bsum<=0) stop("The estimated frontier is not an increasing function. Please check your data")
   effy <- exp(y)/exp(ystar)
   effx <- effy^(1/bsum)
-  effMat <- round(data.frame(y.side=effy,x.side=effx),3)
+  effMat <- data.frame(y.side=effy,x.side=effx)
   fitted <- ystar
   resid <- y-ystar
   rownames(effMat) <- names(fitted) <- names(resid) <- rownames(data)
@@ -96,6 +96,7 @@ print.CobbDouglas <- function(x,...) {
   cat("| $residuals    Residuals                  |","\n")
   cat(" ------------------------------------------ ","\n")
   cat("summary() and predict() methods are available","\n")
+  cat("use CoobDouglas_boot() to obtain bootstrap confidence intervals","\n")
   cat("?CobbDouglas to see the documentation","\n")
   }
 
@@ -144,8 +145,8 @@ predict.CobbDouglas <- function(object,newdata=NULL,type="output",...) {
       if((ynam%in%colnames(newdata))==F) stop("Output variable '",ynam,"' not found in 'newdata'",sep="")
       if(sum(is.na(newdata[,ynam]))>0) stop("Missing values found in 'newdata'")
       if(sum(newdata[,ynam]<=0)>0) stop("Null or negative values found for variable '",ynam,"'",sep="")
-      effy <- round(newdata[,ynam]/res,3)
-      effx <- round(effy^(1/sum(par[2:length(par)])),3)
+      effy <- newdata[,ynam]/res
+      effx <- effy^(1/sum(par[2:length(par)]))
       if(sum(effy>1)|sum(effx>1)) warning("Some points are above the frontier")
       effMat <- cbind(y.side=effy,x.side=effx)
       rownames(effMat) <- names(res)  
@@ -157,8 +158,14 @@ predict.CobbDouglas <- function(object,newdata=NULL,type="output",...) {
   }
 
 # plot method
-plot.CobbDouglas <- function(x,x.name=NULL,x.fixed=NULL,xlab=NULL,ylab=NULL,add.points=TRUE,add.grid=TRUE,add.legend=TRUE,cex.legend=0.9,digits=3,col="red",...) {
+plot.CobbDouglas <- function(x,x.name=NULL,x.fixed=NULL,add.grid=TRUE,add.points=TRUE,add.legend=TRUE,cex.legend=0.9,digits=3,xlab=NULL,ylab=NULL,col="red",...) {
   #
+  if(!is.numeric(digits)) {
+    digits <- 3
+    } else {
+    digits <- digits[1]
+    if(digits<0) digits <- 3
+    }
   if(!is.logical(add.grid)) add.grid <- T
   add.grid <- add.grid[1]
   if(!is.logical(add.points)) add.points <- T
@@ -166,29 +173,30 @@ plot.CobbDouglas <- function(x,x.name=NULL,x.fixed=NULL,xlab=NULL,ylab=NULL,add.
   if(!is.logical(add.legend)) add.legend <- T
   add.legend <- add.legend[1]
   #
-  xnam <- x$x.names
+  xall <- x$x.names
   ynam <- x$y.name
   data <- x$data
   if(is.null(x.name)) {
-    x.name <- xnam[1]
+    x.name <- xall[1]
     } else {
-    if(length(setdiff(x.name,xnam))>0) stop("Unknown variable '",x.name[1],"'")
+    if(length(setdiff(x.name,xall))>0) stop("Unknown variable '",x.name[1],"'")
+    x.name <- x.name[1]
     }
   y <- data[,ynam]
   v <- data[,x.name]
   xseq <- seq(0, max(v), length=1000)
   xseq[1] <- 1e-12
-  if(length(xnam)==1) {
+  if(length(xall)==1) {
     newdat <- data.frame(xseq)
-    colnames(newdat) <- xnam
+    colnames(newdat) <- xall
     } else {
-    xnam2 <- setdiff(xnam,x.name)
+    xnam2 <- setdiff(xall,x.name)
     if(is.null(x.fixed)) {
       x.fixed <- apply(data[,xnam2,drop=F],2,mean,na.rm=T)
       } else {
       auxch <- setdiff(xnam2, names(x.fixed))
       if(length(auxch)>0) {
-        warnings("Invalid value passed to argument 'x.fixed': empirical means have been used")
+        warning("Invalid argument 'x.fixed': empirical means have been used")
         x.fixed <- apply(data[,xnam2,drop=F],2,mean,na.rm=T)
         } else {
         x.fixed <- x.fixed[xnam2]
@@ -200,7 +208,7 @@ plot.CobbDouglas <- function(x,x.name=NULL,x.fixed=NULL,xlab=NULL,ylab=NULL,add.
   yseq <- predict(x, newdata=newdat)
   if(is.null(xlab)) xlab <- x.name
   if(is.null(ylab)) ylab <- ynam
-  if(length(xnam)==1) {
+  if(length(xall)==1) {
     if(add.points) {
       plot(v, y, ylim=c(0,max(yseq,na.rm=T)), xlab=xlab, ylab=ylab, ...)
       } else {
@@ -211,9 +219,9 @@ plot.CobbDouglas <- function(x,x.name=NULL,x.fixed=NULL,xlab=NULL,ylab=NULL,add.
     }
   if(add.grid) grid()
   lines(xseq, yseq, col=col)
-  if(length(xnam)>1) {  
+  if(length(xall)>1) {  
     if(add.legend) {
-      legend("topleft", legend=paste(xnam2," = ",round(x.fixed,digits),sep=""),
+      legend("topleft", legend=paste(xnam2," = ",signif(x.fixed,digits),sep=""),
         cex=cex.legend, bty="n")
       }
     }

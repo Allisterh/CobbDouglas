@@ -10,7 +10,7 @@
 }
 \value{An object of class \code{CobbDouglas_boot}, that is a list with three components: \code{parameters}, \code{y.side} and \code{x.side}. Each component is a data.frame containing the estimated value and the bootstrap confidence interval at level \code{conf} for each parameter (component \code{parameters}), output-side technical efficiencies (component \code{y.side}) and input-side technical efficiencies (component \code{x.side}).}
 \details{Non-parameteric bootstrap resampling is performed (Efron, 1979) and bias-corrected boostrap confidence intervals are computed (Efron, 1987).}
-\author{Alessandro Magrini <alessandro.magrini@unifi.it>}
+%\author{Alessandro Magrini <alessandro.magrini@unifi.it>}
 \references{
 B. Efron (1987). Better Bootstrap Confidence Intervals. \emph{Journal of the American Statistical Association}, 82(397): 171-185.
 
