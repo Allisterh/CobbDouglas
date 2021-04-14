@@ -43,6 +43,7 @@ m1_eff[which(m1_eff$y.side==1),]
 # setting beta=1 (constant returns to scale) seems to fit worse
 m1c <- CobbDouglas("output", "labour", data=production, beta.sum=1)
 m1c$parameters
+m1c$PRE  ## proportional reduction in error is lower
 m1c$efficiency[which(m1c$efficiency$y.side==1),]
 plot(m1c, cex.axis=1.1, cex.lab=1.2, main="beta = 1", cex.main=1.6)
 ```
