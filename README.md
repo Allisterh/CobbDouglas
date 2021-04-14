@@ -61,9 +61,9 @@ plot(m2, x.name="labour", x.fixed=c(capital=1), cex.axis=1.1, cex.lab=1.2)
 
 ## plot the estimated frontier from the side of 'capital'
 # 'labour' fixed at its empirical mean
-plot(m2, x.name="capital", cex.axis=1.1, cex.lab=1.2)
+plot(m2, x.names="capital", cex.axis=1.1, cex.lab=1.2)
 # 'labour' fixed at value 1
-plot(m2, x.name="capital", x.fixed=c(labour=1), cex.axis=1.1, cex.lab=1.2)
+plot(m2, x.names="capital", x.fixed=c(labour=1), cex.axis=1.1, cex.lab=1.2)
 
 # beta.sum=1 (constant returns to scale)
 m2c <- CobbDouglas("output", c("labour","capital"), data=production, beta.sum=1)
@@ -86,5 +86,8 @@ predict(m2, newdata=data.frame(output=15,labour=20,capital=5), type="eff")
 Bootstrap confidence intervals
 ```
 set.seed(123)
-CobbDouglas_boot(m2, nboot=500)
+m2_boot <- CobbDouglas_boot(m2, nboot=500)
+m2_boot$parameters  ## parameters
+m2_boot$y.side      ## output-side efficiencies
+m2_boot$x.side      ## input-side efficiencies
 ```
