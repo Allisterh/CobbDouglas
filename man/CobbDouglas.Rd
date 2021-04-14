@@ -12,6 +12,7 @@
 \value{An object of class \code{CobbDouglas}, that is a list with the following components:
   \item{\code{parameters}}{Parameter estimates.}
   \item{\code{efficiency}}{Output-side (\code{y.side}) and input-side (\code{x.side}) technical efficiencies of the sample units.}
+  \item{\code{PRE}}{Proportional reduction in error, equating to the squared correlation between observed and predicted values of the output.}
   \item{\code{fitted}}{Fitted values, equal to the logarithm of the maximum producible output for each unit.}
   \item{\code{residuals}}{Residuals, equal to the logarithm of output-side technical efficiencies.}
   \item{\code{beta.sum}}{Value passed to argument \code{beta.sum}.}
@@ -79,9 +80,10 @@ m1_eff <- m1$efficiency
 # efficient units
 m1_eff[which(m1_eff$y.side==1),]
 
-# setting beta=1 (constant returns to scale) seems not so good
+# setting beta=1 (constant returns to scale) seems to fit worse
 m1c <- CobbDouglas("output", "labour", data=production, beta.sum=1)
 m1c$parameters
+m1c$PRE  ## proportional reduction in error is lower
 m1c$efficiency[which(m1c$efficiency$y.side==1),]
 plot(m1c, cex.axis=1.1, cex.lab=1.2, main="beta = 1", cex.main=1.6)
 

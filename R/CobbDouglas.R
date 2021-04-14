@@ -80,8 +80,9 @@ CobbDouglas <-  function(y.name,x.names=NULL,data,beta.sum=NULL) {
   fitted <- ystar
   resid <- y-ystar
   rownames(effMat) <- names(fitted) <- names(resid) <- rownames(data)
-  OUT <- list(parameters=parOK,efficiency=effMat,fitted=fitted, residuals=resid,
-    beta.sum=beta.sum,y.name=y.name,x.names=x.names,data=data[,c(y.name,x.names)])
+  OUT <- list(parameters=parOK,efficiency=effMat,PRE=cor(exp(ystar),exp(y))^2,
+    fitted=fitted,residuals=resid,beta.sum=beta.sum,
+    y.name=y.name,x.names=x.names,data=data[,c(y.name,x.names)])
   class(OUT) <- "CobbDouglas"
   OUT
   }
@@ -89,12 +90,13 @@ CobbDouglas <-  function(y.name,x.names=NULL,data,beta.sum=NULL) {
 # print method
 print.CobbDouglas <- function(x,...) {
   cat("Cobb-Douglas frontier with ",length(x$x.names)," input variables",sep="","\n")
-  cat(" ------------------------------------------ ","\n")
-  cat("| $parameters   Parameter estimates        |","\n")
-  cat("| $efficiency   Technical efficiencies     |","\n")
-  cat("| $fitted       Fitted values              |","\n")
-  cat("| $residuals    Residuals                  |","\n")
-  cat(" ------------------------------------------ ","\n")
+  cat(" ----------------------------------------------- ","\n")
+  cat("| $parameters   Parameter estimates             |","\n")
+  cat("| $efficiency   Technical efficiencies          |","\n")
+  cat("| $PRE          Proportional reduction in error |","\n")  
+  cat("| $fitted       Fitted values                   |","\n")
+  cat("| $residuals    Residuals                       |","\n")
+  cat(" ----------------------------------------------- ","\n")
   cat("summary() and predict() methods are available","\n")
   cat("use CoobDouglas_boot() to obtain bootstrap confidence intervals","\n")
   cat("?CobbDouglas to see the documentation","\n")
@@ -104,7 +106,7 @@ print.CobbDouglas <- function(x,...) {
 summary.CobbDouglas <- function(object,...) {
   par <- object$parameters
   parOK <- c(par,'(beta.sum)'=sum(par[2:length(par)]))
-  res <- list(n.input=length(object$x.names),parameters=parOK,eff=summary(object$efficiency))
+  res <- list(n.input=length(object$x.names),parameters=parOK,PRE=object$PRE,eff=summary(object$efficiency))
   class(res) <- "summary.CobbDouglas"
   res
   }
@@ -115,6 +117,7 @@ print.summary.CobbDouglas <- function(x,...) {
   cat("Estimated parameters:","\n")
   print(x$parameters)
   cat("\n")
+  cat("Proportional reduction in error: ",x$PRE,sep="","\n","\n")
   cat("Technical efficiencies:","\n")
   print(x$eff)
   }
@@ -242,20 +245,26 @@ ndigits <- function(x) {
   }
 
 # bias-corrected CI (auxiliary)
-bc_ci <- function(boot,stat,conf=0.95) {
+bc_ci <- function(boot,stat,conf) {
   b <- qnorm(mean(boot>stat))
-  z <- qnorm(c(1-conf,conf)/2)
+  z <- qnorm(c(1-conf,1+conf)/2)
   p <- pnorm(z-2*b)
   quantile(boot,prob=p)
   }
 
-# compute CI for a boostrap simulation (auxiliary)
-ciCalc <- function(boot,stat,conf=0.95) {
-  res <- c()
+# compute bias-corrected CI for a boostrap simulation (auxiliary)
+ciCalc <- function(boot,stat,conf) {
+  res <- resQ <- c()
   for(i in 1:ncol(boot)) {
-    res <- rbind(res,bc_ci(boot[,i],stat[i],conf=conf))
+    res <- rbind(res, bc_ci(boot[,i],stat[i],conf=conf))
+    #quantile(c(boot[,i],stat[i]),prob=c(1-conf,1+conf)/2)
     }
-  data.frame(stat,res)
+  out <- data.frame(stat,res)
+  for(i in 1:nrow(out)) {
+    if(out[i,1]<out[i,2]) out[i,2] <- out[i,1]
+    if(out[i,1]>out[i,3]) out[i,3] <- out[i,1]
+    }
+  out
   }
 
 # bootstrap
@@ -274,6 +283,7 @@ CobbDouglas_boot <- function(x,nboot=500,conf=0.95) {
   thresh <- 10^(-max(sapply(par[2:length(par)],ndigits)))  #####
   bhat <- matrix(nrow=0,ncol=length(x$parameters))
   effy <- effx <- matrix(nrow=0,ncol=nrow(data))
+  preval <- c()
   count <- 0
   while(count<nboot) {
     ind <- sample(1:nrow(data),nrow(data),replace=T)
@@ -284,23 +294,22 @@ CobbDouglas_boot <- function(x,nboot=500,conf=0.95) {
     bhat <- rbind(bhat,ipar)
     effy <- rbind(effy,imod$efficiency$y.side)
     effx <- rbind(effx,imod$efficiency$x.side)
+    preval <- c(preval,imod$PRE)
     count <- count+1
     }
   colnames(bhat) <- names(x$parameters)
   colnames(effy) <- colnames(effx) <- rownames(data)
   bsum_res <- apply(bhat[,2:ncol(bhat),drop=F],1,sum)
-  bsum_est <- sum(par[2:length(par)])
-  bsum_nam <- "(beta.sum)"
   b_res <- cbind(bhat,bsum_res)
-  est <- c(par,bsum_est)
-  summ <- ciCalc(b_res,est,conf=conf)
-  rownames(summ) <- c("(tau)",names(par)[2:length(par)],bsum_nam)
+  summ <- ciCalc(b_res, c(par,sum(par[2:length(par)])), conf=conf)
+  rownames(summ) <- c("(tau)",names(par)[2:length(par)],"(beta.sum)")
   colnames(summ) <- c("Estimate",paste(round(c(1-conf,1+conf)/2*100,2),"%",sep=""))
-  summ_effy <- ciCalc(effy,x$efficiency$y.side,conf=conf)
-  summ_effx <- ciCalc(effx,x$efficiency$x.side,conf=conf)
-  colnames(summ_effy) <- colnames(summ_effx) <- c("Estimate",paste(round(c(1-conf,1+conf)/2*100,2),"%",sep=""))
+  summ_effy <- ciCalc(effy, x$efficiency$y.side, conf=conf)
+  summ_effx <- ciCalc(effx, x$efficiency$x.side, conf=conf)
+  summ_pre <- ciCalc(cbind(preval), x$PRE, conf=conf)
+  colnames(summ_effy) <- colnames(summ_effx) <- colnames(summ_pre) <- c("Estimate",paste(round(c(1-conf,1+conf)/2*100,2),"%",sep=""))
   rownames(summ_effy) <- rownames(summ_effx) <- rownames(data)
-  res <- list(parameters=summ,y.side=summ_effy,x.side=summ_effx)
+  res <- list(parameters=summ,PRE=summ_pre,y.side=summ_effy,x.side=summ_effx)
   class(res) <- "CobbDouglas_boot"
   res
   }

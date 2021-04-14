@@ -26,5 +26,5 @@ m2 <- CobbDouglas("output", c("labour","capital"), data=production)
 predict(m2, newdata=data.frame(labour=20,capital=5))
 
 # prediction of technical efficiency
-predict(m2, newdata=data.frame(output=15,labour=20,capital=5), type="eff")
+predict(m2, newdata=data.frame(output=11.5,labour=20,capital=5), type="eff")
 }

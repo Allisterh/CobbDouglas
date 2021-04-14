@@ -8,7 +8,7 @@
   \item{nboot}{The number of bootstrap replications. It must be at least 50.}
   \item{conf}{The confidence level. Default is 0.95.}
 }
-\value{An object of class \code{CobbDouglas_boot}, that is a list with three components: \code{parameters}, \code{y.side} and \code{x.side}. Each component is a data.frame containing the estimated value and the bootstrap confidence interval at level \code{conf} for each parameter (component \code{parameters}), output-side technical efficiencies (component \code{y.side}) and input-side technical efficiencies (component \code{x.side}).}
+\value{An object of class \code{CobbDouglas_boot}, that is a list with three components: \code{parameters}, \code{PRE}, \code{y.side} and \code{x.side}. Each component is a data.frame containing the estimated value and the bootstrap confidence interval at level \code{conf} for each parameter (component \code{parameters}), proportional reduction in error, output-side technical efficiencies (component \code{y.side}) and input-side technical efficiencies (component \code{x.side}).}
 \details{Non-parameteric bootstrap resampling is performed (Efron, 1979) and bias-corrected boostrap confidence intervals are computed (Efron, 1987).}
 %\author{Alessandro Magrini <alessandro.magrini@unifi.it>}
 \references{

@@ -9,4 +9,4 @@ S3method(print, CobbDouglas_boot)
 
 import("quadprog")
 importFrom("graphics", "grid", "lines", "plot", "box", "legend")
-importFrom("stats", "predict", "pnorm", "qnorm", "quantile")
+importFrom("stats", "predict", "pnorm", "qnorm", "quantile", "cor")
