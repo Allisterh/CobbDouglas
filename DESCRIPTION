@@ -10,4 +10,4 @@ Depends: R (>= 3.5.0), quadprog
 Imports: graphics, stats
 License: GPL-2
 NeedsCompilation: no
-Packaged: 2021-04-14 12:45:28 UTC; Alessandro
+Packaged: 2021-04-18 18:47:02 UTC; Alessandro

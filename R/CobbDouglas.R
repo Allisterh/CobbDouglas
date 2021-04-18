@@ -257,12 +257,7 @@ ciCalc <- function(boot,stat,conf) {
     res <- rbind(res, bc_ci(boot[,i],stat[i],conf=conf))
     #quantile(c(boot[,i],stat[i]),prob=c(1-conf,1+conf)/2)
     }
-  out <- data.frame(stat,apply(boot,2,sd),res)
-  for(i in 1:nrow(out)) {
-    if(out[i,1]<out[i,3]) out[i,3] <- out[i,1]
-    if(out[i,1]>out[i,4]) out[i,4] <- out[i,1]
-    }
-  out
+  data.frame(stat,apply(boot,2,sd),res)
   }
 
 # bootstrap
@@ -281,7 +276,6 @@ CobbDouglas_boot <- function(x,nboot=500,conf=0.95) {
   thresh <- 10^(-max(sapply(par[2:length(par)],ndigits)))  #####
   bhat <- matrix(nrow=0,ncol=length(x$parameters))
   effy <- effx <- matrix(nrow=0,ncol=nrow(data))
-  #rsq <- c()
   count <- 0
   while(count<nboot) {
     ind <- sample(1:nrow(data),nrow(data),replace=T)
@@ -290,9 +284,9 @@ CobbDouglas_boot <- function(x,nboot=500,conf=0.95) {
     ipar <- imod$parameters
     ipar[which(ipar<=thresh)] <- 0  #####
     bhat <- rbind(bhat,ipar)
-    effy <- rbind(effy,imod$efficiency$y.side)
-    effx <- rbind(effx,imod$efficiency$x.side)
-    #rsq <- c(rsq,imod$rsq)
+    suppressWarnings(ipred <- predict(imod, newdata=data, type="efficiency"))
+    effy <- rbind(effy, ipred[,"y.side"])
+    effx <- rbind(effx, ipred[,"x.side"])
     count <- count+1
     }
   colnames(bhat) <- names(x$parameters)
@@ -304,7 +298,6 @@ CobbDouglas_boot <- function(x,nboot=500,conf=0.95) {
   colnames(summ) <- c("Estimate","Std. err.",paste(round(c(1-conf,1+conf)/2*100,2),"%",sep=""))
   summ_effy <- ciCalc(effy, x$efficiency$y.side, conf=conf)
   summ_effx <- ciCalc(effx, x$efficiency$x.side, conf=conf)
-  #summ_rsq <- ciCalc(cbind(rsq), x$rsq, conf=conf)
   colnames(summ_effy) <- colnames(summ_effx) <- c("Estimate","Std. err.",paste(round(c(1-conf,1+conf)/2*100,2),"%",sep=""))
   rownames(summ_effy) <- rownames(summ_effx) <- rownames(data)
   res <- list(parameters=summ,y.side=summ_effy,x.side=summ_effx)
