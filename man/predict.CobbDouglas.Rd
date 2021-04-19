@@ -7,8 +7,8 @@
 }
 \arguments{
   \item{object}{An object of class \code{CobbDouglas}.}
-  \item{newdata}{A data.frame in which to look for variables with which to predict the maximum producible output (if \code{type="output"}) or technical efficiency (if \code{type="efficiency"}). If \code{NULL} (the default), fitted values or technical efficiencies of the sample units are returned.}
-  \item{type}{The type of prediction: \code{"output"} (maximum producible output)) or \code{"efficiency"} (technical efficiency). It can be abbreviated.}
+  \item{newdata}{A data.frame in which to look for variables with which to predict the maximum producible output (if \code{type="output"}) or technical efficiency (if \code{type="efficiency"}).}
+  \item{type}{The type of prediction: \code{"output"} (maximum producible output) or \code{"efficiency"} (technical efficiency). default is \code{"output"}. It can be abbreviated.}
   \item{...}{Further arguments passed to the generic \code{predict} method.}
 }
 \value{An object of class \code{data.frame}.}

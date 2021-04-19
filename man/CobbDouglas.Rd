@@ -2,19 +2,21 @@
 \alias{CobbDouglas}
 \title{Estimation of a Cobb-Douglas production frontier}
 \description{Estimation of a Cobb-Douglas production frontier from sample data.}
-\usage{CobbDouglas(y.name, x.names=NULL, data, beta.sum=NULL)}
+\usage{CobbDouglas(y.name, x.names=NULL, data, beta.sum=NULL, beta.min=0)}
 \arguments{
   \item{y.name}{The name of the output variable.}
   \item{x.names}{The names of the input variables. If \code{NULL} (the default), it is set equal to the name of the variables in \code{data} besides \code{y.name}.}
   \item{data}{A data.frame containing the output and the input variables.}
-  \item{beta.sum}{Constraint on the sum of beta parameters. If \code{NULL} (the default), beta parameters are freely estimated (subjected only to positive constraint).}
+  \item{beta.sum}{Constraint on the sum of beta parameters. If \code{NULL} (the default), beta parameters are freely estimated (subjected only to non-negative constraint).}
+  \item{beta.min}{Constraint on the minimum of each beta parameter. Default is 0.}
 }
 \value{An object of class \code{CobbDouglas}, that is a list with the following components:
   \item{\code{parameters}}{Parameter estimates.}
   \item{\code{efficiency}}{Output-side (\code{y.side}) and input-side (\code{x.side}) technical efficiencies of the sample units.}
   \item{\code{fitted}}{Fitted values, equal to the logarithm of the maximum producible output for each unit.}
   \item{\code{residuals}}{Residuals, equal to the logarithm of output-side technical efficiencies.}
-  \item{\code{beta.sum}}{Value passed to argument \code{beta.sum}.}
+  \item{\code{beta.sum}}{Value passed to argument \code{beta.sum}.}   
+  \item{\code{beta.min}}{Value passed to argument \code{beta.min}.}
   \item{\code{y.name}}{Value passed to argument \code{y.name}.}
   \item{\code{x.names}}{Value passed to argument \code{x.names}.}
   \item{\code{data}}{Data used in the estimation.}
@@ -27,20 +29,19 @@ A Cobb-Douglas production frontier is defined as:
 \deqn{y^*_i = \tau\prod_{h=1}^H x_{hi}^{\beta_h}
 }
 where \eqn{y^*_i} is the maximum producible output for unit \eqn{i},
-\eqn{\tau} is a parameter representing the total factor productivity for a technically efficient unit,
-and \eqn{\beta_h} (\eqn{h=1,\ldots,H}) is a parameter representing the elasticity of the output with respect to the \eqn{h}-th input.
+\eqn{\tau>0} is a parameter representing the total factor productivity for a technically efficient unit,
+and \eqn{\beta_h\geq 0} (\eqn{h=1,\ldots,H}) is a parameter representing the elasticity of the output with respect to the \eqn{h}-th input.
+Note that the Cobb-Douglas production frontier is linear on the logarithmic scale:
+\deqn{\log y^*_i = \log\tau+\sum_{h=1}^H \beta_h \log x_{hi}}
 
-Constant returns to scale holds if \eqn{\sum_{h=1}^H \beta_h=1} (obtained setting the argument \code{beta.sum} to value 1).
+Constant returns to scale hold if \eqn{\sum_{h=1}^H \beta_h=1}, and they can be obtained by setting the argument \code{beta.sum} to value 1.
 Instead, \eqn{\sum_{h=1}^H \beta_h<1} implies decreasing returns to scale, while
 \eqn{\sum_{h=1}^H \beta_h>1} implies increasing returns to scale.
-For \eqn{i=1,\ldots,n}, quantities \eqn{y^*_i} are denoted as \emph{fitted values},
-while quantities \eqn{e_i=y_i-y^*_i} are denoted as \emph{residuals}.
 
 Estimation of the Cobb-Douglas production frontier is performed through constrained least squares on the logarithmic scale:
-\deqn{(\hat{\tau},\hat{\beta}_1,\ldots,\hat{\beta}_H)=\code{argmin}_{\tau,\beta_1,\ldots,\beta_H}\sum_{i=1}^n(\log y_i-\log y^*_i)^2}
-where:
-\deqn{\log y^*_i = \log\tau+\sum_{h=1}^H \beta_h \log x_{hi}}
-subjected to constraints:
+\deqn{(\hat{\tau},\hat{\beta}_1,\ldots,\hat{\beta}_H)=\code{argmin}_{\tau,\beta_1,\ldots,\beta_H}\sum_{i=1}^n(\log y_i-\log y^*_i)^2=}
+\deqn{=\code{argmin}_{\tau,\beta_1,\ldots,\beta_H}\sum_{i=1}^n(\log y_i-\log\tau-\sum_{h=1}^H \beta_h \log x_{hi})^2}
+subjected to:
 \deqn{\log y^*_i \geq \log y_i \hspace{.7cm} i=1,\ldots,n}
 \deqn{\beta_h \geq 0 \hspace{.7cm} h=1,\ldots,H}
 

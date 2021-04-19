@@ -3,13 +3,13 @@
 \docType{package}
 \title{Efficiency analysis using the Cobb-Douglas production frontier}
 \description{Functionalities to estimate a Cobb-Douglas production frontier from sample data through constrained least squares.
-It is possible to set the desired returns to scale, to predict the maximum producible output or technical efficiency, and to obtain boostrap confidence intervals for parameters and technical efficiencies.}
+It is possible to set a lower bound for the elasticities and/or the desired returns to scale, to predict the maximum producible output or technical efficiency, and to obtain boostrap confidence intervals for parameters and technical efficiencies.}
 \details{
   \tabular{ll}{
   Package: \tab CobbDouglas\cr
   Type: \tab Package\cr
   Version: \tab 0.1\cr
-  Date: \tab 2021-04-14\cr
+  Date: \tab 2021-04-19\cr
   License: \tab GPL-2
   }
 The main functions of the package are:

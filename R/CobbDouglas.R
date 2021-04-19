@@ -1,5 +1,5 @@
 # estimate the frontier
-CobbDouglas <-  function(y.name,x.names=NULL,data,beta.sum=NULL) {
+CobbDouglas <-  function(y.name,x.names=NULL,data,beta.sum=NULL,beta.min=0) {
   # check data
   if(missing(data)) stop("Missing argument 'data'")
   if(!identical(class(data),"data.frame")) stop("Argument 'data' must be a data.frame")
@@ -18,6 +18,8 @@ CobbDouglas <-  function(y.name,x.names=NULL,data,beta.sum=NULL) {
   if(length(xchk)>0) stop("Null or negative values found for variable '",xchk[1],"'",sep="")
   if(length(beta.sum)>1) beta.sum <- beta.sum[1]
   if(!is.null(beta.sum) & (!is.numeric(beta.sum) || beta.sum<=0)) stop("Argument 'beta.sum' must be a strictly positive value")
+  if(length(beta.min)>1) beta.min <- beta.min[1]
+  if(!is.null(beta.min) & (!is.numeric(beta.min) || beta.min<0)) stop("Argument 'beta.min' must be a non-negative value")
   n <- nrow(data)
   yorig <- data[,y.name]
   y <- log(data[,y.name])
@@ -40,14 +42,14 @@ CobbDouglas <-  function(y.name,x.names=NULL,data,beta.sum=NULL) {
       for(i in 2:p) {
         Xnew[,i] <- X[,i]-X[,p+1]
         }
-      r0 <- rep(0,p-1)
+      r0 <- rep(beta.min,p-1)
       }
     } else {
     x0 <- matrix(0,nrow=p,ncol=p+1)
     for(i in 1:p) {
       x0[i,i+1] <- 1 
       }
-    r0 <- rep(0,p)
+    r0 <- rep(beta.min,p)
     ynew <- y
     Xnew <- X
     }
@@ -81,7 +83,7 @@ CobbDouglas <-  function(y.name,x.names=NULL,data,beta.sum=NULL) {
   resid <- y-ystar
   rownames(effMat) <- names(fitted) <- names(resid) <- rownames(data)
   OUT <- list(parameters=parOK,efficiency=effMat,
-    fitted=fitted,residuals=resid,beta.sum=beta.sum,
+    fitted=fitted,residuals=resid,beta.sum=beta.sum,beta.min=beta.min,
     y.name=y.name,x.names=x.names,data=data[,c(y.name,x.names)])
   class(OUT) <- "CobbDouglas"
   OUT
@@ -271,7 +273,8 @@ CobbDouglas_boot <- function(x,nboot=500,conf=0.95) {
   data <- x$data
   ynam <- x$y.name
   xnam <- x$x.names
-  k <- x$beta.sum
+  ss <- x$beta.sum
+  mm <- x$beta.min
   par <- x$parameters
   thresh <- 10^(-max(sapply(par[2:length(par)],ndigits)))  #####
   bhat <- matrix(nrow=0,ncol=length(x$parameters))
@@ -280,7 +283,7 @@ CobbDouglas_boot <- function(x,nboot=500,conf=0.95) {
   while(count<nboot) {
     ind <- sample(1:nrow(data),nrow(data),replace=T)
     idat <- data[ind,]
-    imod <- CobbDouglas(y.name=ynam,x.names=xnam,data=idat,beta.sum=k)
+    imod <- CobbDouglas(y.name=ynam,x.names=xnam,data=idat,beta.sum=ss,beta.min=mm)
     ipar <- imod$parameters
     ipar[which(ipar<=thresh)] <- 0  #####
     bhat <- rbind(bhat,ipar)
