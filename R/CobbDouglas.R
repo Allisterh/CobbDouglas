@@ -288,8 +288,8 @@ CobbDouglas_boot <- function(x,nboot=500,conf=0.95) {
     ipar[which(ipar<=thresh)] <- 0  #####
     bhat <- rbind(bhat,ipar)
     suppressWarnings(ipred <- predict(imod, newdata=data, type="efficiency"))
-    effy <- rbind(effy, ipred[,"y.side"])
-    effx <- rbind(effx, ipred[,"x.side"])
+    effy <- rbind(effy, ipred[,"y.side"]/max(ipred[,"y.side"]))
+    effx <- rbind(effx, ipred[,"x.side"]/max(ipred[,"x.side"]))
     count <- count+1
     }
   colnames(bhat) <- names(x$parameters)

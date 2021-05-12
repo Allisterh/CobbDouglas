@@ -9,7 +9,7 @@ It is possible to set a lower bound for the elasticities and/or the desired retu
   Package: \tab CobbDouglas\cr
   Type: \tab Package\cr
   Version: \tab 0.1\cr
-  Date: \tab 2021-04-19\cr
+  Date: \tab 2021-05-12\cr
   License: \tab GPL-2
   }
 The main functions of the package are:
