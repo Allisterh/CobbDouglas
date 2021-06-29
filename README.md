@@ -20,6 +20,10 @@ For any request or feedback, please write to <alessandro.magrini@unifi.it> (Ales
 Below, you find some examples of use of the package.
 _________________________________________________________________
 
+Load the `CobbDouglas` package
+```
+library(CobbDouglas)
+```
 Load simulated data
 ```
 data(production)
